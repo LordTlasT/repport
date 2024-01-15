@@ -2,6 +2,12 @@
 - mariadb database, for creating the user and tables, this project ships files under the`sql` directory.
 
 # Installation
+Clone the project
+```sh
+git clone https://github.com/LordTlasT/repport
+cd repport
+```
+Install all dependencies
 ```sh
 npm install
 ```
@@ -20,110 +26,184 @@ Also create a config.json file:
 npm run start
 ```
 
-# Categories API
+# Category API
 
-## Endpoints
-
-### GET /category
+## GET /category
 
 Fetches all categories.
 
-#### Response
+**Response**
 
-- 200 OK: Returns an array of categories.
+A JSON array of categories.
 
-### POST /category
+
+## POST /category
 
 Creates a new category.
 
-#### Request
+**Request Body**
 
-- Body: `{ "name": "Category Name" }`
+- `name`: The name of the category.
 
-#### Response
+**Response**
 
-- 200 OK: Returns a message indicating the category was created.
+A JSON object with a success message.
 
-### GET /category/:id
 
-Fetches a specific category.
+## GET /category/:id
 
-#### Parameters
+Fetches a specific category by its ID.
 
-- `id`: The ID of the category to fetch.
+**URL Parameters**
 
-#### Response
+- `id`: The ID of the category.
 
-- 200 OK: Returns the requested category.
-- 404 Not Found: If no category with the specified ID exists.
+**Response**
 
-### PUT /category/:id
+A JSON object representing the category.
 
-Updates a specific category.
 
-#### Parameters
+## PUT /category/:id
 
-- `id`: The ID of the category to update.
+Updates a specific category by its ID.
 
-#### Request
+**URL Parameters**
 
-- Body: `{ "name": "New Category Name" }`
+- `id`: The ID of the category.
 
-#### Response
+**Request Body**
 
-- 200 OK: Returns a message indicating the category was updated.
-- 404 Not Found: If no category with the specified ID exists.
+- `name`: The new name of the category.
+
+**Response**
+
+A JSON object with a success message.
+
+
+## GET /category/:id/reports
+
+Fetches all reports in a specific category by its ID.
+
+**URL Parameters**
+
+- `id`: The ID of the category.
+
+**Response**
+
+A JSON array of reports in the category.
 
 # Reports API
 
-## Endpoints
-
-### GET /reports
+## GET /report
 
 Fetches all reports.
 
-#### Response
+**Response**
 
-- 200 OK: Returns an array of reports.
+A JSON array of reports.
 
-### POST /reports
+Example:
+
+```json
+[
+    {
+        "id": 1,
+        "title": "Report 1",
+        "description": "This is report 1",
+        "category_id": 1
+    },
+    {
+        "id": 2,
+        "title": "Report 2",
+        "description": "This is report 2",
+        "category_id": 2
+    }
+]
+```
+
+
+## POST /report
 
 Creates a new report.
 
-#### Request
+**Request Body**
 
-- Body: `{ "title": "Report Title", "description": "Report Description" }`
+- `title`: The title of the report.
+- `description`: The description of the report.
+- `category_id`: The ID of the category the report belongs to.
 
-#### Response
+**Response**
 
-- 200 OK: Returns a message indicating the report was created.
+A JSON object with a success message.
 
-### GET /reports/:id
+Example:
 
-Fetches a specific report.
+```json
+{
+    "message": "Report created"
+}
+```
 
-#### Parameters
+## GET /report/:id
 
-- `id`: The ID of the report to fetch.
+Retrieves details of a specific report.
 
-#### Response
+### Parameters
 
-- 200 OK: Returns the requested report.
-- 404 Not Found: If no report with the specified ID exists.
+- **id** (integer): The ID of the report to be retrieved.
 
-### PUT /reports/:id
+### Response
+
+- **Status Code**: 200 OK
+- **Body**:
+
+```json
+{
+    "id": 1,
+    "title": "Report 1",
+    "description": "This is report 1",
+    "category_id": 1
+}
+```
+
+
+## PUT /report/:id
 
 Updates a specific report.
 
-#### Parameters
+### Parameters
 
-- `id`: The ID of the report to update.
+- **id** (integer): The ID of the report to be updated.
 
-#### Request
+### Request Body
 
-- Body: `{ "title": "New Report Title", "description": "New Report Description" }`
+- **Content Type**: application/json
 
-#### Response
+```json
+{
+    "title": "Updated Report Title",
+    "description": "Updated report description",
+    "category_id": 1
+}
+```
+Note: description is optional.
 
-- 200 OK: Returns a message indicating the report was updated.
-- 404 Not Found: If no report with the specified ID exists.
+
+## DELETE /report/:id
+
+Deletes a specific report.
+
+### Parameters
+
+- **id** (integer): The ID of the report to be deleted.
+
+### Response
+
+- **Status Code**: 200 OK
+- **Body**:
+
+```json
+{
+    "message": "Report deleted"
+}
+```
