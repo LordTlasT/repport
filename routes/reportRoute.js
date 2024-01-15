@@ -3,6 +3,7 @@ const router = express.Router();
 
 const db = require('../database.js');
 
+// index
 router.get('/', async (req, res) => {
     const conn = await db.getConnection();
     const query = `SELECT * FROM reports`;
@@ -15,16 +16,23 @@ router.get('/', async (req, res) => {
     }
 });
 
+// create
 router.post('/', async (req, res) => {
     const { title, description } = req.body;
     const conn = await db.getConnection();
     const query = `
     INSERT INTO reports (title, description)
     VALUES (?, ?) RETURNING ID`;
-    conn.query(query, [title, description]);
-    res.json({ message: 'Report created' });
+    try {
+        await conn.query(query, [title, description]);
+        res.json({ message: 'Report created' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to create report' });
+        console.log(err);
+    }
 });
 
+// show
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const conn = await db.getConnection();
@@ -42,6 +50,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// update
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { title, description } = req.body;
@@ -62,6 +71,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// delete
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const conn = await db.getConnection();
