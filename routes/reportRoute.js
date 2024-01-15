@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../database.js');
+const validate = require('../middleware/validate.js');
 
 // index
 router.get('/', async (req, res) => {
@@ -17,23 +18,26 @@ router.get('/', async (req, res) => {
 });
 
 // create
-router.post('/', async (req, res) => {
-    const { title, description } = req.body;
+router.post('/', validate.report, async (req, res) => {
+    const { title, description, category_id } = req.body;
     const conn = await db.getConnection();
     const query = `
-    INSERT INTO reports (title, description)
-    VALUES (?, ?) RETURNING ID`;
+    INSERT INTO reports (title, description, category_id)
+    VALUES (?, ?, ?) RETURNING ID`;
     try {
-        await conn.query(query, [title, description]);
+        await conn.query(query, [title, description || "", category_id]);
         res.json({ message: 'Report created' });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to create report' });
+        if (err.code === 'ER_NO_REFERENCED_ROW_2')
+            res.status(400).json({ error: 'Category does not exist' });
+        else
+            res.status(500).json({ error: 'Failed to create report' });
         console.log(err);
     }
 });
 
 // show
-router.get('/:id', async (req, res) => {
+router.get('/:id', validate.id, async (req, res) => {
     const { id } = req.params;
     const conn = await db.getConnection();
     const query = `SELECT * FROM reports WHERE id = ?`;
@@ -51,16 +55,16 @@ router.get('/:id', async (req, res) => {
 });
 
 // update
-router.put('/:id', async (req, res) => {
+router.put('/:id', validate.id, validate.report, async (req, res) => {
     const { id } = req.params;
-    const { title, description } = req.body;
+    const { title, description, category_id } = req.body;
     const conn = await db.getConnection();
     const query = `
     UPDATE reports
-    SET title = ?, description = ?
+    SET title = ?, description = ?, category_id = ?
     WHERE id = ?`;
     try {
-        await conn.query(query, [title, description, id]);
+        results = await conn.query(query, [title, description || "", category_id, id]);
         if (results.affectedRows)
             res.json({ message: 'Report updated' });
         else
@@ -72,7 +76,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // delete
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validate.id, async (req, res) => {
     const { id } = req.params;
     const conn = await db.getConnection();
     const query = `DELETE FROM reports WHERE id = ?`;
