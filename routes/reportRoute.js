@@ -3,6 +3,7 @@ const router = express.Router();
 
 const db = require('../database.js');
 const validate = require('../middleware/validate.js');
+const ensure = require('../middleware/ensure.js');
 
 // index
 router.get('/', async (req, res) => {
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 // create
-router.post('/', validate.report, async (req, res) => {
+router.post('/', ensure.admin, validate.report, async (req, res) => {
     const { title, description, category_id } = req.body;
     const conn = await db.getConnection();
     const query = `
@@ -55,7 +56,7 @@ router.get('/:id', validate.id, async (req, res) => {
 });
 
 // update
-router.put('/:id', validate.id, validate.report, async (req, res) => {
+router.put('/:id', ensure.admin, validate.id, validate.report, async (req, res) => {
     const { id } = req.params;
     const { title, description, category_id } = req.body;
     const conn = await db.getConnection();
@@ -76,7 +77,7 @@ router.put('/:id', validate.id, validate.report, async (req, res) => {
 });
 
 // delete
-router.delete('/:id', validate.id, async (req, res) => {
+router.delete('/:id', ensure.admin, validate.id, async (req, res) => {
     const { id } = req.params;
     const conn = await db.getConnection();
     const query = `DELETE FROM reports WHERE id = ?`;

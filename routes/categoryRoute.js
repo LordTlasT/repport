@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const validate = require('../middleware/validate.js');
+const ensure = require('../middleware/ensure.js');
 
 const db = require('../database.js');
+
 
 // index
 router.get('/', async (req, res) => {
@@ -19,7 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 // create
-router.post('/', validate.category, async (req, res) => {
+router.post('/', ensure.admin, validate.category, async (req, res) => {
     const { name } = req.body;
     const conn = await db.getConnection();
     const query = 'INSERT INTO categories (name) VALUES (?)';
@@ -54,7 +56,7 @@ router.get('/:id', validate.id, async (req, res) => {
 });
 
 // update
-router.put('/:id', validate.id, validate.category, async (req, res) => {
+router.put('/:id', ensure.admin, validate.id, validate.category, async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     const conn = await db.getConnection();

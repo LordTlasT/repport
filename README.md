@@ -17,13 +17,23 @@ Also create a config.json file:
     "host": "localhost",
     "user": "node",
     "password": "space123",
-    "database": "nodedb"
+    "database": "nodedb",
+    "token": "token123"
 }
 ```
+You can and should tweak these values to your liking.
 
 # Running
 ```sh
 npm run start
+```
+# Authorization
+To use certain routes you need to pass the the Authorization header.  For example if your token in `config.json` is "token123" a curl request would look like this:
+```sh
+curl -X PUT http://localhost:3000/report/3 \
+    -H "Content-Type: application/json" \
+    -H 'Authorization: Bearer token123' \
+    -d '{"title":"est", "category_id": "1", "token": "token123"}'
 ```
 
 # Category API
